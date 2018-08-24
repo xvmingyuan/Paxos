@@ -22,7 +22,7 @@ public class Main {
 		// 创建 NUM_OF_ACCEPTOR 个接受者
 		List<Acceptor> acceptors = new ArrayList<>();
 		for	(int i=0;i<NUM_OF_ACCEPTOR;i++){
-			acceptors.add(new Acceptor());
+			acceptors.add(new Acceptor(i));
 		}
 		System.out.println(latch);
 		// 用线程池 创建线程

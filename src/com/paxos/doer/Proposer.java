@@ -68,6 +68,7 @@ public class Proposer implements Runnable{
 			// 承诺数量
 			promisedCount = 0;
 			for	(Acceptor acceptor : acceptors){
+				System.out.println(proposal.getId()+"的prepare阶段,当前acceptor为:"+acceptor.toString());
 				//  发送准备提案给决策者
 				prepareResult = acceptor.onPrepare(proposal);
 				//	随机休眠一段时间，模拟网络延迟。
@@ -96,6 +97,7 @@ public class Proposer implements Runnable{
 						acceptedProposals.add(prepareResult.getProposal());
 					}
 				}
+				System.out.println(proposal.getId()+"的prepare阶段结束,当前acceptor为:"+acceptor.toString());
 			}// end of for
 			
 			//	获得多数决策者的承诺
@@ -141,6 +143,7 @@ public class Proposer implements Runnable{
 			acceptedCount = 0;
 			// 分别给决策者发送提案
 			for	(Acceptor acceptor : acceptors){
+				System.out.println(proposal.getId()+"的commit阶段,当前acceptor:"+acceptor);
 				// 决策者返回的提案结果
 				CommitResult commitResult = acceptor.onCommit(proposal);
 				//	模拟网络延迟
@@ -161,6 +164,7 @@ public class Proposer implements Runnable{
 					// 将未接受的提案 放入集合中
 					acceptedProposals.add(commitResult.getProposal());
 				}
+				System.out.println(proposal.getId()+"的commit阶段,当前acceptor为:"+acceptor.toString()+"结束");
 			}
 			//	题案被半数以上决策者接受，说明题案已经被选出来。
 			if	(acceptedCount >= halfCount){
