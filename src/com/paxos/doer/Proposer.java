@@ -164,7 +164,7 @@ public class Proposer implements Runnable{
 					// 将未接受的提案 放入集合中
 					acceptedProposals.add(commitResult.getProposal());
 				}
-				System.out.println(proposal.getId()+"的commit阶段,当前acceptor为:"+acceptor.toString()+"结束");
+				System.out.println(proposal.getId()+"的commit阶段结束,当前acceptor为:"+acceptor.toString());
 			}
 			//	题案被半数以上决策者接受，说明题案已经被选出来。
 			if	(acceptedCount >= halfCount){
