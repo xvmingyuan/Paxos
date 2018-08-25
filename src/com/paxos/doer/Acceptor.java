@@ -29,7 +29,7 @@ public class Acceptor {
 
 		// 模拟网络不正常，发生丢包、超时现象
 		if (PaxosUtil.isCrashed()) {
-			PaxosUtil.printStr(szProposal+"Acceptor Prepare 网络出现故障"+this);
+			PaxosUtil.printStr(this.getAcceptor_id()+"acceptor说:"+szProposal+"Acceptor Prepare 网络出现故障");
 			return null;
 		}
 
@@ -43,7 +43,7 @@ public class Acceptor {
 			// 转换自身的状态，已经承诺了提议者，并记录承诺的提案。
 			status = AcceptorStatus.PROMISED;
 			promisedProposal.copyFromInstance(szProposal);
-			System.out.println(szProposal+"当前为NONE，承诺了提议者，并记录承诺的提案");
+			System.out.println(this.getAcceptor_id()+"acceptor说:"+szProposal+"当前为NONE，承诺了提议者，并记录承诺的提案");
 			return prepareResult;
 		// 已经承诺过任意提议者
 		case PROMISED:
@@ -52,14 +52,14 @@ public class Acceptor {
 				prepareResult.setAcceptorStatus(status);
 				prepareResult.setPromised(false);
 				prepareResult.setProposal(promisedProposal);
-				System.out.println(szProposal+"太低的编号,当前为" +promisedProposal.getId()+ ",所以不接受承诺");
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+szProposal+"太低的编号,当前为" +promisedProposal.getId()+ ",所以不接受承诺");
 				return prepareResult;
 			} else {
 				promisedProposal.copyFromInstance(szProposal);
 				prepareResult.setAcceptorStatus(status);
 				prepareResult.setPromised(true);
 				prepareResult.setProposal(promisedProposal);
-				System.out.println(szProposal + "的提案被承诺了");
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+"承诺了"+szProposal + "的提案");
 				return prepareResult;
 			}
 			// 已经批准过提案
@@ -72,13 +72,13 @@ public class Acceptor {
 				prepareResult.setAcceptorStatus(status);
 				prepareResult.setPromised(true);
 				prepareResult.setProposal(promisedProposal);
-				System.out.println(szProposal+"已经批准过，更新序列号,返回:" + prepareResult);
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+"已经批准过"+szProposal+"更新序列号,返回:" + prepareResult);
 				return prepareResult;
 			} else { // 否则，不予批准
 				prepareResult.setAcceptorStatus(status);
 				prepareResult.setPromised(false);
 				prepareResult.setProposal(acceptedProposal);
-				System.out.println(szProposal+"不予批准:返回:" + prepareResult);
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+"不予批准"+szProposal+"返回:" + prepareResult);
 				return prepareResult;
 			}
 		default:
@@ -92,7 +92,7 @@ public class Acceptor {
 	public synchronized CommitResult onCommit(Proposal szProposal) {
 		CommitResult commitResult = new CommitResult();
 		if (PaxosUtil.isCrashed()) {
-			System.out.println(szProposal+"Acceptor Commit阶段 网络出现故障"+this);
+			System.out.println(this.getAcceptor_id()+"acceptor说:"+szProposal+"Acceptor Commit阶段 网络出现故障"+this);
 			return null;
 		}
 		switch (status) {
@@ -103,7 +103,7 @@ public class Acceptor {
 		case PROMISED:
 			// 判断commit提案和承诺提案的序列号大小
 			// 大于，接受提案。
-			System.out.println(szProposal.getId() + "与PROMISED阶段的编号比较" + promisedProposal.getId());
+			System.out.println(this+"acceptor说:"+szProposal.getId() + "与PROMISED阶段的编号比较" + promisedProposal.getId());
 			if (szProposal.getId() >= promisedProposal.getId()) {
 				promisedProposal.copyFromInstance(szProposal);
 				acceptedProposal.copyFromInstance(szProposal);
@@ -111,14 +111,14 @@ public class Acceptor {
 				commitResult.setAccepted(true);
 				commitResult.setAcceptorStatus(status);
 				commitResult.setProposal(promisedProposal);
-				System.out.println(szProposal+"号大 接受");
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+szProposal+"号大 接受"+this);
 				return commitResult;
 
 			} else { // 小于，回绝提案
 				commitResult.setAccepted(false);
 				commitResult.setAcceptorStatus(status);
 				commitResult.setProposal(promisedProposal);
-				System.out.println(szProposal+"号小 拒绝");
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+szProposal+"号小 拒绝");
 				return commitResult;
 			}
 			// 已接受过提案
@@ -131,18 +131,26 @@ public class Acceptor {
 				commitResult.setAccepted(true);
 				commitResult.setAcceptorStatus(status);
 				commitResult.setProposal(acceptedProposal);
-				System.out.println(szProposal+"号大 接受 状态是ACCEPTED,只更新编号,不更新值 ");
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+szProposal+"号大 接受 状态是ACCEPTED,只更新编号,不更新值 ");
 				return commitResult;
 			} else { // 否则，回绝提案
 				commitResult.setAccepted(false);
 				commitResult.setAcceptorStatus(status);
 				commitResult.setProposal(acceptedProposal);
-				System.out.println(szProposal+"号太小 拒绝");
+				System.out.println(this.getAcceptor_id()+"acceptor说:"+szProposal+"号太小 拒绝");
 				return commitResult;
 			}
 		}
 
 		return null;
+	}
+	
+	public int getAcceptor_id() {
+		return acceptor_id;
+	}
+
+	public void setAcceptor_id(int acceptor_id) {
+		this.acceptor_id = acceptor_id;
 	}
 
 	@Override
