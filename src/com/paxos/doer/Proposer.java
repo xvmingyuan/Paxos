@@ -76,13 +76,13 @@ public class Proposer implements Runnable {
 
 				// 模拟网络异常
 				if (null == prepareResult) {
-					System.out.println(proposal.getId() + "提案者 prepare 阶段网络故障"+acceptor.getAcceptor_id());
+					System.out.println(proposal.getId() + "提案者 prepare 阶段网络故障,acceptor:"+acceptor.getAcceptor_id());
 					continue;
 				}
 
 				// 获得承诺
 				if (prepareResult.isPromised()) {
-					System.out.println(proposal.getId() + "在"+acceptor.getAcceptor_id()+"获取一个承诺, 结果" + prepareResult);
+					System.out.println(proposal.getId() + "在acceptor:"+acceptor.getAcceptor_id()+"acceptor获取一个承诺, 结果" + prepareResult);
 					promisedCount++;
 				} else {
 
@@ -150,16 +150,16 @@ public class Proposer implements Runnable {
 
 				// 模拟网络异常
 				if (null == commitResult) {
-					System.out.println(proposal.getId() + "提案者 commit 阶段网络故障"+acceptor.getAcceptor_id());
+					System.out.println(proposal.getId() + "提案者 commit 阶段网络故障,acceptor:"+acceptor.getAcceptor_id());
 					continue;
 				}
 
 				// 题案被决策者接受。
 				if (commitResult.isAccepted()) {
-					System.out.println(proposal.getId() + "提案被接受一次" + "接受者" + acceptor.getAcceptor_id());
+					System.out.println(proposal.getId() + "提案被接受一次," + "接受者:" + acceptor.getAcceptor_id());
 					acceptedCount++;
 				} else {
-					System.out.println(proposal.getId() + "提案未被接受" + "不接受者" + acceptor.getAcceptor_id());
+					System.out.println(proposal.getId() + "提案未被接受," + "不接受者:" + acceptor.getAcceptor_id());
 					// 将未接受的提案 放入集合中
 					acceptedProposals.add(commitResult.getProposal());
 				}
