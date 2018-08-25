@@ -76,13 +76,13 @@ public class Proposer implements Runnable {
 
 				// 模拟网络异常
 				if (null == prepareResult) {
-					System.out.println(proposal.getId() + "网络不可用");
+					System.out.println(proposal.getId() + "提案者 prepare 阶段网络故障"+acceptor);
 					continue;
 				}
 
 				// 获得承诺
 				if (prepareResult.isPromised()) {
-					System.out.println(proposal.getId() + "获取一个承诺" + prepareResult.isPromised());
+					System.out.println(proposal.getId() + "在"+acceptor+"获取一个承诺, 结果" + prepareResult);
 					promisedCount++;
 				} else {
 
@@ -152,7 +152,7 @@ public class Proposer implements Runnable {
 
 				// 模拟网络异常
 				if (null == commitResult) {
-					System.out.println(proposal.getId() + "网络不可用");
+					System.out.println(proposal.getId() + "提案者 commit 阶段网络故障"+acceptor);
 					continue;
 				}
 
