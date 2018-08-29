@@ -1,14 +1,12 @@
 package com.paxos.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * 
- *	性能记录
+ *	性能记录工具
  */
 public class PerformanceRecord {
+	// 默认最大size
 	private static final int MAX_ID_VALUE = 200;
+	//单例对象
 	private static PerformanceRecord instance = null;
 	private String[] despArray;
 	private long[] startArray;
@@ -16,6 +14,7 @@ public class PerformanceRecord {
 	
 	// 实例获取方法
 	public static PerformanceRecord getInstance(){
+		// 双重检测机制
 		if	(null==instance){
 			synchronized(PerformanceRecord.class){
 				if	(null==instance)
