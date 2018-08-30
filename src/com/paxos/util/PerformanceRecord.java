@@ -6,15 +6,15 @@ package com.paxos.util;
 public class PerformanceRecord {
 	// 默认最大size
 	private static final int MAX_ID_VALUE = 200;
-	//单例对象
-	private static PerformanceRecord instance = null;
+	//单例对象(防止无序的发生)
+	private static volatile PerformanceRecord instance = null;
 	private String[] despArray;
 	private long[] startArray;
 	private int recordCount;
 	
 	// 实例获取方法
 	public static PerformanceRecord getInstance(){
-		// 双重检测机制
+		// 双重检测机制(懒汉)
 		if	(null==instance){
 			synchronized(PerformanceRecord.class){
 				if	(null==instance)
