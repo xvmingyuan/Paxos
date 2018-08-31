@@ -14,8 +14,8 @@ import com.paxos.doer.Proposer;
  *
  */
 public class Main {
-	private static final int NUM_OF_PROPOSER = 3; // 提议者数量
-	private static final int NUM_OF_ACCEPTOR = 3; // 接受提议者数量
+	private static final int NUM_OF_PROPOSER = 5; // 提议者数量(注:必须是奇数个)
+	private static final int NUM_OF_ACCEPTOR = 5; // 接受提议者数量(注:必须是奇数个)
 	public static CountDownLatch latch = new CountDownLatch(NUM_OF_PROPOSER); // 延迟N个线程执行配置
 	
 	public static void main(String[] args) throws Exception{
@@ -24,7 +24,6 @@ public class Main {
 		for	(int i=0;i<NUM_OF_ACCEPTOR;i++){
 			acceptors.add(new Acceptor(i));
 		}
-		System.out.println(latch);
 		// 用线程池 创建线程
 		ExecutorService es = Executors.newCachedThreadPool();
 		for	(int i=0;i<NUM_OF_PROPOSER;i++){
@@ -34,6 +33,5 @@ public class Main {
 			es.submit(proposer);
 		}
 		es.shutdown();
-		System.out.println(latch);
 	}
 }

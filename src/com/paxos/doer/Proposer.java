@@ -47,13 +47,13 @@ public class Proposer implements Runnable {
 		voted = false;
 		halfCount = acceptors.size() / 2 + 1;
 		this.proposal = new Proposal(PaxosUtil.generateId(myID, numCycle, proposerCount), myID + "#Proposal",
-				myID + "为多数票");
+				myID + ":leader");
 		numCycle++;
 	}
 
 	// 准备提案过程，获得大多数决策者支持后进入确认提案阶段。
 	public synchronized boolean prepare() {
-		System.out.println(proposal.getId() + "提案准备阶段开始");
+		//System.out.println(proposal.getId() + "提案准备阶段开始");
 		PrepareResult prepareResult = null;
 
 		boolean isContinue = true;
@@ -68,7 +68,7 @@ public class Proposer implements Runnable {
 			// 承诺数量
 			promisedCount = 0;
 			for (Acceptor acceptor : acceptors) {
-				System.out.println(proposal.getId() + "的prepare阶段,当前acceptor为:" + acceptor.getAcceptor_id());
+				//System.out.println(proposal.getId() + "的prepare阶段,当前acceptor为:" + acceptor.getAcceptor_id());
 				// 发送准备提案给决策者
 				prepareResult = acceptor.onPrepare(proposal);
 				// 随机休眠一段时间，模拟网络延迟。
@@ -76,34 +76,34 @@ public class Proposer implements Runnable {
 
 				// 模拟网络异常
 				if (null == prepareResult) {
-					System.out.println(proposal.getId() + "提案者 prepare 阶段网络故障,acceptor:"+acceptor.getAcceptor_id());
+					//System.out.println(proposal.getId() + "提案者 prepare 阶段网络故障,acceptor:"+acceptor.getAcceptor_id());
 					continue;
 				}
 
 				// 获得承诺
 				if (prepareResult.isPromised()) {
-					System.out.println(proposal.getId() + "在acceptor:"+acceptor.getAcceptor_id()+"acceptor获取一个承诺, 结果" + prepareResult);
+					//System.out.println(proposal.getId() + "在acceptor:"+acceptor.getAcceptor_id()+"acceptor获取一个承诺, 结果" + prepareResult);
 					promisedCount++;
 				} else {
 
 					// 决策者已经给了更高id题案的承诺
 					if (prepareResult.getAcceptorStatus() == AcceptorStatus.PROMISED) {
-						System.out.println(proposal.getId() + "的提案承诺失败,已有更高级提案被承诺了");
+						//System.out.println(proposal.getId() + "的提案承诺失败,已有更高级提案被承诺了");
 						promisedProposals.add(prepareResult.getProposal());
 					}
 					// 决策者已经通过了一个题案
 					if (prepareResult.getAcceptorStatus() == AcceptorStatus.ACCEPTED) {
-						System.out.println(proposal.getId() + "的提案承诺失败,"+acceptor+"已通过了一个题案,无法更改" + prepareResult.getProposal());
+						//System.out.println(proposal.getId() + "的提案承诺失败,"+acceptor+"已通过了一个题案,无法更改" + prepareResult.getProposal());
 						acceptedProposals.add(prepareResult.getProposal());
 					}
 				}
-				System.out.println(proposal.getId() + "的prepare阶段结束,当前acceptor为:" + acceptor.getAcceptor_id());
+				//System.out.println(proposal.getId() + "的prepare阶段结束,当前acceptor为:" + acceptor.getAcceptor_id());
 			} // end of for
 
 			// 获得多数决策者的承诺
 			// 可以进行第二阶段：题案提交
 			if (promisedCount >= halfCount) {
-				System.out.println(proposal.getId() + "的'承诺'阶段通过,数量:" + promisedCount + "-----最小提案通过数:" + halfCount);
+				//System.out.println(proposal.getId() + "的'承诺'阶段通过,数量:" + promisedCount + "-----最小提案通过数:" + halfCount);
 				break;
 			}
 			Proposal votedProposal = votedEnd(acceptedProposals);
@@ -118,9 +118,9 @@ public class Proposer implements Runnable {
 			if (maxIdAcceptedProposal != null) {
 				proposal.setId(PaxosUtil.generateId(myID, numCycle, proposerCount));
 				proposal.setValue(maxIdAcceptedProposal.getValue());
-				System.out.println(proposal.getId() + "获取更大ID,并接受maxIdAcceptedProposal提案中的value" + maxIdAcceptedProposal);
+				//System.out.println(proposal.getId() + "获取更大ID,并接受maxIdAcceptedProposal提案中的value" + maxIdAcceptedProposal);
 			} else {
-				System.out.println(proposal.getId() + "当前maxIdAcceptedProposal中没有被'确认'的提案");
+				//System.out.println(proposal.getId() + "当前maxIdAcceptedProposal中没有被'确认'的提案");
 				proposal.setId(PaxosUtil.generateId(myID, numCycle, proposerCount));
 			}
 
@@ -131,7 +131,7 @@ public class Proposer implements Runnable {
 
 	// 获得大多数决策者承诺后，开始进行提案确认
 	public synchronized boolean commit() {
-		System.out.println(proposal.getId() + "提案确认阶段开始");
+		//System.out.println(proposal.getId() + "提案确认阶段开始");
 		boolean isContinue = true;
 
 		// 已获得接受该提案的决策者个数
@@ -142,7 +142,7 @@ public class Proposer implements Runnable {
 			acceptedCount = 0;
 			// 分别给决策者发送提案
 			for (Acceptor acceptor : acceptors) {
-				System.out.println(proposal.getId() + "的commit阶段,当前acceptor:" + acceptor.getAcceptor_id());
+				//System.out.println(proposal.getId() + "的commit阶段,当前acceptor:" + acceptor.getAcceptor_id());
 				// 决策者返回的提案结果
 				CommitResult commitResult = acceptor.onCommit(proposal);
 				// 模拟网络延迟
@@ -150,24 +150,29 @@ public class Proposer implements Runnable {
 
 				// 模拟网络异常
 				if (null == commitResult) {
-					System.out.println(proposal.getId() + "提案者 commit 阶段网络故障,acceptor:"+acceptor.getAcceptor_id());
+					//System.out.println(proposal.getId() + "提案者 commit 阶段网络故障,acceptor:"+acceptor.getAcceptor_id());
 					continue;
 				}
 
 				// 题案被决策者接受。
 				if (commitResult.isAccepted()) {
-					System.out.println(proposal.getId() + "提案被接受一次," + "接受者:" + acceptor.getAcceptor_id());
+					//System.out.println(proposal.getId() + "提案被接受一次," + "接受者:" + acceptor.getAcceptor_id());
 					acceptedCount++;
 				} else {
-					System.out.println(proposal.getId() + "提案未被接受," + "不接受者:" + acceptor.getAcceptor_id());
+					//System.out.println(proposal.getId() + "提案未被接受," + "不接受者:" + acceptor.getAcceptor_id());
 					// 将未接受的提案 放入集合中
 					acceptedProposals.add(commitResult.getProposal());
 				}
-				System.out.println(proposal.getId() + "的commit阶段结束,当前acceptor为:" + acceptor.getAcceptor_id());
+				//System.out.println(proposal.getId() + "的commit阶段结束,当前acceptor为:" + acceptor.getAcceptor_id());
 			}
 			// 题案被半数以上决策者接受，说明题案已经被选出来。
 			if (acceptedCount >= halfCount) {
 				System.out.println(myID + " : 题案已经投票选出:" + proposal);
+				if(myID == Integer.parseInt(proposal.getValue().split(":")[0])) {
+					System.out.println(myID + "保存状态为:leader");
+				}else {
+					System.out.println(myID + "保存状态为:follower");
+				}
 				return true;
 			} else {
 				Proposal maxIdAcceptedProposal = getMaxIdProposal(acceptedProposals);
@@ -176,10 +181,10 @@ public class Proposer implements Runnable {
 				if (maxIdAcceptedProposal != null) {
 					proposal.setId(PaxosUtil.generateId(myID, numCycle, proposerCount));
 					proposal.setValue(maxIdAcceptedProposal.getValue());
-					System.out.println(proposal.getId() + "为更大ID,并接受maxIdAcceptedProposal提案中的value" + maxIdAcceptedProposal);
+					//System.out.println(proposal.getId() + "为更大ID,并接受maxIdAcceptedProposal提案中的value" + maxIdAcceptedProposal);
 				} else {
 					proposal.setId(PaxosUtil.generateId(myID, numCycle, proposerCount));
-					System.out.println(proposal.getId() + "提案号加大了,做重审准备" + proposal);
+					//System.out.println(proposal.getId() + "提案号加大了,做重审准备" + proposal);
 				}
 
 				numCycle++;
@@ -198,10 +203,10 @@ public class Proposer implements Runnable {
 		if (acceptedProposals.size() > 0) {
 			Proposal retProposal = acceptedProposals.get(0);
 			for (Proposal proposal : acceptedProposals) {
-				System.out.println("寻找最大提案号:" + proposal.getId());
+				//System.out.println("寻找最大提案号:" + proposal.getId());
 				if (proposal.getId() > retProposal.getId())
 					retProposal = proposal;
-				System.out.println(proposal + "接受名单中最大编号的提案" + retProposal);
+				//System.out.println(proposal + "接受名单中最大编号的提案" + retProposal);
 			}
 
 			return retProposal;
@@ -215,7 +220,7 @@ public class Proposer implements Runnable {
 		Map<Proposal, Integer> proposalCount = countAcceptedProposalCount(acceptedProposals);
 		for (Entry<Proposal, Integer> entry : proposalCount.entrySet()) {
 			if (entry.getValue() >= halfCount) {
-				System.out.println(proposal.getId() + "当前多数派已出现" + entry.getValue());
+				//System.out.println(proposal.getId() + "当前多数派已出现" + entry.getValue());
 				voted = true;
 				return entry.getKey();
 			}
@@ -236,7 +241,7 @@ public class Proposer implements Runnable {
 			}
 			proposalCount.put(proposal, count);
 		}
-		System.out.println(proposal.getId() + "计算决策者回复的每个已经被接受的提案计数" + proposalCount);
+		//System.out.println(proposal.getId() + "计算决策者回复的每个已经被接受的提案计数" + proposalCount);
 		return proposalCount;
 	}
 
@@ -244,21 +249,21 @@ public class Proposer implements Runnable {
 	public void run() {
 		//
 		Main.latch.countDown();
-		System.out.println("主函数线程数释放一个线程");
+		//System.out.println("主函数线程数释放一个线程");
 		try {
-			System.out.println("主函数等待");
+			//System.out.println("主函数等待");
 			Main.latch.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("计时器启动,ID:" + myID);
+		//System.out.println("计时器启动,ID:" + myID);
 		PerformanceRecord.getInstance().start("Proposer" + myID, myID);
-		System.out.println(myID + "的提案去准备");
+		//System.out.println(myID + "的提案去准备");
 		prepare();
-		System.out.println(myID + "的提案去确认");
+		//System.out.println(myID + "的提案去确认");
 		commit();
 
 		PerformanceRecord.getInstance().end(myID);
-		System.out.println("计时器结束,ID:" + myID);
+		//System.out.println("计时器结束,ID:" + myID);
 	}
 }

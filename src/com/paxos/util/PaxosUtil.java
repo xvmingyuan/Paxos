@@ -27,7 +27,6 @@ public class PaxosUtil {
 	
 	//	随机休眠，模拟网络延迟
 	public  static int sleepRandom(){
-		System.out.println("网络延迟...");
 		int timeInMs = random.nextInt(100) + 10;
 		try {
 			Thread.currentThread().sleep(timeInMs);
